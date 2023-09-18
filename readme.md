@@ -1,5 +1,7 @@
 # IoT Sensor Data Publisher with Multi-WiFi and MQTT
 
+[![CodeFactor](https://www.codefactor.io/repository/github/1999azzar/convert-manual-2-speed-fan-to-auto/badge)](https://www.codefactor.io/repository/github/1999azzar/convert-manual-2-speed-fan-to-auto)
+
 This Arduino project demonstrates an ESP8266-based IoT sensor data publisher. It reads temperature and humidity data from a DHT11 sensor and light control signals from Adafruit IO MQTT broker. The code supports multi-WiFi configuration with fallback and robust MQTT connection.
 
 ## Hardware Requirements
