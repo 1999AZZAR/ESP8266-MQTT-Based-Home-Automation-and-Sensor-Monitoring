@@ -109,6 +109,17 @@ style wifi1, wifi2, wifi3, connected1, connected2, connected3, server1, server2,
 - Ensure you have a stable internet connection and access to the Adafruit IO server for MQTT communication.
 - Double-check hardware connections and GPIO pin assignments to avoid any issues.
 
+## Support
+
+You can support me by buy me a coffee if u like to.
+
+<div align="left">
+<!--   <h4>And you can also support me by <a href="https://www.buymeacoffee.com/azzar" target="_blank">buying me coffee</a></h4> -->
+  <a href="https://www.buymeacoffee.com/azzar" target="_blank">
+    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 42px !important;width: 151.9px !important; margin-top: 50px !important;">
+  </a>
+</div>
+
 ## Credits
 
 This project uses the following libraries:
