@@ -1,22 +1,79 @@
 #include "config.h"
 
+// Function prototypes
 void MQTT_connect();
+void setupWiFi();
+void readAndPublishSensorData();
 
 void setup() {
   Serial.begin(115200);
 
-  pinMode(Relay1, OUTPUT);
-  pinMode(Relay2, OUTPUT);
+  // Initialize WiFi
+  setupWiFi();
 
-  //Adding the WiFi networks to the MultiWiFi instance
+  // Subscribe to MQTT topics
+  mqtt.subscribe(&Light1);
+  mqtt.subscribe(&Light2);
+}
+
+void loop() {
+  MQTT_connect();
+
+  // Process MQTT subscriptions
+  Adafruit_MQTT_Subscribe *subscription;
+  while ((subscription = mqtt.readSubscription(500))) {
+    if (subscription == &Light1 || subscription == &Light2) {
+      int relayNumber = (subscription == &Light1) ? 1 : 2;
+      Serial.print(F("Got r") + String(relayNumber) + F(" : "));
+      Serial.println((char *)subscription->lastread);
+      int relayState = atoi((char *)subscription->lastread);
+      digitalWrite((relayNumber == 1) ? Relay1 : Relay2, relayState);
+    }
+  }
+
+  // Read and publish sensor data
+  readAndPublishSensorData();
+  delay(3500);
+}
+
+void readAndPublishSensorData() {
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature();
+
+  if (isnan(humidity) || isnan(temperature)) {
+    Serial.println(F("Failed to read from DHT sensor!"));
+    return;
+  }
+
+  Serial.print(F("Humidity: "));
+  Serial.print(humidity);
+  Serial.print(F("%  Temperature: "));
+  Serial.print(temperature);
+  Serial.println(F("°C "));
+
+  // Publish sensor data
+  if (!temp.publish(temperature)) {
+    Serial.println(F("Failed to publish temperature"));
+  } else {
+    Serial.println(F("Temperature published successfully"));
+  }
+
+  if (!humi.publish(humidity)) {
+    Serial.println(F("Failed to publish humidity"));
+  } else {
+    Serial.println(F("Humidity published successfully"));
+  }
+}
+
+void setupWiFi() {
+  // Adding the WiFi networks to the MultiWiFi instance
   wifi_multi.addAP(ssid1, password1);
   wifi_multi.addAP(ssid2, password2);
   wifi_multi.addAP(ssid3, password3);
 
-  //Wait for ESP8266 to scan the local area and connect with the strongest of the networks defined above
+  // Wait for ESP8266 to scan the local area and connect with the strongest of the networks defined above
   Serial.print("Connecting to Wi-Fi...");
-  while (wifi_multi.run(connectTimeOutPerAP) != WL_CONNECTED)
-  {
+  while (wifi_multi.run(connectTimeOutPerAP) != WL_CONNECTED) {
     Serial.print(".");
     delay(1000);
   }
@@ -25,72 +82,26 @@ void setup() {
   Serial.println(WiFi.SSID());
   Serial.print("IP Address: ");
   Serial.println(WiFi.localIP());
-
-  mqtt.subscribe(&Light1);
-  mqtt.subscribe(&Light2);
-
-}
-
-void loop() {
-  MQTT_connect();
-  Adafruit_MQTT_Subscribe *subscription;
-  while ((subscription = mqtt.readSubscription(500))) {
-    if (subscription == &Light1) {
-      Serial.print(F("Got r1 : "));
-      Serial.println((char *)Light1.lastread);
-      int Light1_State = atoi((char *)Light1.lastread);
-      digitalWrite(Relay1, Light1_State);
-    }
-    if (subscription == &Light2) {
-      Serial.print(F("Got r2 : "));
-      Serial.println((char *)Light2.lastread);
-      int Light2_State = atoi((char *)Light2.lastread);
-      digitalWrite(Relay2, Light2_State);
-    }
-  }
-  delay(3500);
-
-  float h = dht.readHumidity();
-  float t = dht.readTemperature();
-  if (isnan(h) || isnan(t)) {
-    Serial.println(F("Failed to read from DHT sensor!"));
-    return;
-  }
-  Serial.print(F("Humidity: "));
-  Serial.print(h);
-  Serial.print(F("%  Temperature: "));
-  Serial.print(t);
-  Serial.println(F("°C "));
-
-  //publising data
-  if (! temp.publish(t)) {
-    Serial.println(F("Failed"));
-  } else {
-    Serial.println(F("OK!"));
-  }
-  if (! humi.publish(h)) {
-    Serial.println(F("Failed"));
-  } else {
-    Serial.println(F("OK!"));
-  }
 }
 
 void MQTT_connect() {
-  int8_t ret;
   if (mqtt.connected()) {
     return;
   }
+
   Serial.print("Connecting to MQTT... ");
   uint8_t retries = 3;
-  while ((ret = mqtt.connect()) != 0) {
-    Serial.println(mqtt.connectErrorString(ret));
+
+  while (!mqtt.connect()) {
+    Serial.println(mqtt.connectErrorString(mqtt.connect()));
     Serial.println("Retrying MQTT connection in 5 seconds...");
     mqtt.disconnect();
     delay(5000);
-    retries--;
-    if (retries == 0) {
+
+    if (--retries == 0) {
       while (1);
     }
   }
+
   Serial.println("MQTT Connected!");
 }
