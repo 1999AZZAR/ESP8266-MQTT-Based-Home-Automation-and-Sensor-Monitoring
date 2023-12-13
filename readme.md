@@ -1,8 +1,8 @@
-# IoT Sensor Data Publisher with Multi-WiFi and MQTT
+# ESP8266 IoT Sensor Data Publisher
 
 [![CodeFactor](https://www.codefactor.io/repository/github/1999azzar/esp8266-mqtt-based-home-automation-and-sensor-monitoring/badge)](https://www.codefactor.io/repository/github/1999azzar/esp8266-mqtt-based-home-automation-and-sensor-monitoring)
 
-This Arduino project demonstrates an ESP8266-based IoT sensor data publisher. It reads temperature and humidity data from a DHT11 sensor and light control signals from Adafruit IO MQTT broker. The code supports multi-WiFi configuration with fallback and robust MQTT connection.
+This Arduino project showcases an ESP8266-based IoT sensor data publisher. It reads temperature and humidity data from a DHT11 sensor and controls lights through Adafruit IO MQTT. The code supports multi-WiFi configuration, ensuring robust connectivity.
 
 ## Hardware Requirements
 
@@ -14,38 +14,31 @@ This Arduino project demonstrates an ESP8266-based IoT sensor data publisher. It
 
 ### config.h
 
-This header file contains the necessary configurations for WiFi and Adafruit IO MQTT. Update the following parameters to match your setup:
+Configure WiFi and Adafruit IO MQTT parameters in this file:
 
-- `Relay1`: The GPIO pin connected to the first relay (Light1).
-- `Relay2`: The GPIO pin connected to the second relay (Light2).
-- `DHTPIN`: The GPIO pin connected to the DHT11 sensor.
-- `DHTTYPE`: The DHT sensor type (DHT11 in this case).
-- `ssid1`, `password1`: WiFi credentials for the first network.
-- `ssid2`, `password2`: WiFi credentials for the second network.
-- `ssid3`, `password3`: WiFi credentials for the third network.
-- `AIO_SERVER`: The Adafruit IO MQTT broker server.
-- `AIO_SERVERPORT`: The MQTT broker port (use 8883 for SSL).
-- `AIO_USERNAME`: Your Adafruit IO username.
-- `AIO_KEY`: Your Adafruit IO secret key.
+- `Relay1`, `Relay2`: GPIO pins for relays.
+- `DHTPIN`: GPIO pin for the DHT11 sensor.
+- WiFi credentials for three networks.
+- Adafruit IO MQTT broker details.
 
 ### main.ino
 
-The main Arduino sketch sets up the connections, subscribes to Adafruit IO feeds for relay control, and publishes temperature and humidity data to corresponding feeds on Adafruit IO.
+The main sketch sets up connections, subscribes to Adafruit IO feeds for relay control, and publishes sensor data.
 
 ## Usage
 
-1. Update the configurations in `config.h`.
-2. Connect the relay module and DHT11 sensor to the appropriate GPIO pins on the ESP8266 board.
-3. Upload the code to your ESP8266 board using the Arduino IDE or compatible software.
-4. The ESP8266 board will attempt to connect to the available WiFi networks in the order defined in `wifi_multi.addAP()`. If one WiFi fails, it will try the next one, ensuring a reliable connection.
-5. Once connected to WiFi and Adafruit IO MQTT broker, it will subscribe to the specified feeds for relay control.
-6. The board will publish temperature and humidity data to the corresponding feeds on Adafruit IO.
-7. Monitor and control the relay outputs remotely through Adafruit IO.
+1. Update configurations in `config.h`.
+2. Connect relay module and DHT11 sensor to GPIO pins.
+3. Upload the code to your ESP8266 board.
+4. Board connects to WiFi networks and Adafruit IO MQTT.
+5. Subscribe to Adafruit IO feeds for relay control.
+6. Publish temperature and humidity data.
+7. Monitor and control relays remotely via Adafruit IO.
 
-## flowchart
+## Flowchart
 
 ```mermaid
-flowchart TD
+flowchart LR
     start[Start] --> config[Config.h]
     config --> library[Include Libraries]
     library --> define[Define Pin Output]
@@ -106,23 +99,12 @@ style wifi1, wifi2, wifi3, connected1, connected2, connected3, server1, server2,
 
 ## Note
 
-- Ensure you have a stable internet connection and access to the Adafruit IO server for MQTT communication.
-- Double-check hardware connections and GPIO pin assignments to avoid any issues.
-
-## Support
-
-You can support me by buy me a coffee if u like to.
-
-<div align="left">
-<!--   <h4>And you can also support me by <a href="https://www.buymeacoffee.com/azzar" target="_blank">buying me coffee</a></h4> -->
-  <a href="https://www.buymeacoffee.com/azzar" target="_blank">
-    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 42px !important;width: 151.9px !important; margin-top: 50px !important;">
-  </a>
-</div>
+- Ensure a stable internet connection and access to Adafruit IO for MQTT.
+- Double-check hardware connections and GPIO assignments.
 
 ## Credits
 
-This project uses the following libraries:
+This project utilizes the following libraries:
 
 - [ESP8266WiFi](https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/readme.html)
 - [ESP8266WiFiMulti](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi/src)
